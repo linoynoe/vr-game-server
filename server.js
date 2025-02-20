@@ -109,19 +109,25 @@ app.get("/api/games", async (req, res) => {
     }
 });
 
-// 📌 **שמירת תוצאות משחק – אפשר לשלוח גם ללא טוקן**
+// 📌 **שמירת תוצאות משחק – רק למשתמש מחובר**
 app.post("/save-game", async (req, res) => {
     try {
-        // יצירת המשחק ללא הצורך בטוקן
-        const newGame = new Game(req.body);
+        const token = req.headers.authorization?.split(" ")[1]; // חילוץ הטוקן מהכותרת
+        if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+        const decoded = jwt.verify(token, JWT_SECRET); // אימות הטוקן
+        const newGame = new Game({
+            ...req.body,
+            playerName: decoded.username, // השם של המשתמש מתוך הטוקן
+            userId: decoded.userId
+        });
+
         await newGame.save();
         res.status(201).json({ message: "Game data saved successfully!" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
-
-
 
 // 📌 **טעינת עמודי HTML**
 app.get("/register", (req, res) => {
