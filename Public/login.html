@@ -13,13 +13,13 @@
 <body>
     <button onclick="logout()">Logout</button>
 
-    <script>
-        async function logout() {
-            await fetch("/logout", { method: "POST", credentials: "include" });
-            alert("Logged out successfully!");
-            window.location.href = "/login.html"; // מעביר לדף ההתחברות לאחר יציאה
-        }
-    </script>
+<script>
+    async function logout() {
+        await fetch("/logout", { method: "POST", credentials: "include" });
+        alert("Logged out successfully!");
+        window.location.href = "/login.html";
+    }
+</script>
 
     <h1>Login</h1>
     <form id="loginForm">
@@ -27,7 +27,6 @@
         <input type="password" id="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -43,21 +42,22 @@
             const data = await response.json();
             if (response.ok) {
                 alert("Login successful!");
-                window.location.href = "/games"; // לאחר התחברות, מעביר לדף המשחק
+                window.location.href = "/games"; // הפניה לעמוד המשחק או התוצאות
             } else {
                 alert(data.error);
             }
         });
-
+    </script>
+    <script>
         async function checkIfLoggedIn() {
             const response = await fetch("/auth", { credentials: "include" });
             const data = await response.json();
             if (data.loggedIn) {
-                window.location.href = "/games"; // אם המשתמש מחובר, הפנה אותו ישירות למשחק
+                window.location.href = "/games"; // אם המשתמש כבר מחובר, להעביר אותו ישר למשחק
             }
         }
-
-        checkIfLoggedIn(); // בדיקה אם המשתמש מחובר
+        checkIfLoggedIn();
     </script>
+    
 </body>
 </html>
