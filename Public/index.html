@@ -29,35 +29,35 @@
     </table>
 
     <script>
-        async function fetchResults() {
-            try {
-                const response = await fetch("http://localhost:5000/games");
-                const data = await response.json();
-                const tableBody = document.getElementById("gameResults");
-                tableBody.innerHTML = ""; // איפוס הטבלה
-
-                data.forEach(game => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${game.playerName}</td>
-                        <td>${game.score}</td>
-                        <td>${game.time}</td>
-                        <td>${game.itemsCollected.join(", ")}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                console.log("✅ Data updated successfully");
-            } catch (error) {
-                console.error("❌ Error fetching data:", error);
-            }
+        function fetchGameData() {
+            fetch("https://vr-game-server.onrender.com/api/games")
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // בדיקה אם הנתונים מגיעים
+                    updateTable(data);
+                })
+                .catch(error => console.error("Error fetching data:", error));
         }
-
-        // רענון אוטומטי כל 5 שניות
-        setInterval(fetchResults, 5000);
-
-        // קריאה ראשונית בעת טעינת הדף
-        fetchResults();
+    
+        function updateTable(games) {
+            const tableBody = document.getElementById("gamesTableBody");
+            tableBody.innerHTML = ""; // ריקון הטבלה לפני עדכון
+    
+            games.forEach(game => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${game.playerName}</td>
+                    <td>${game.score}</td>
+                    <td>${game.time}</td>
+                    <td>${game.itemsCollected.join(", ")}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    
+        // טען את הנתונים בהפעלת הדף
+        fetchGameData();
+        setInterval(fetchGameData, 5000); // רענון אוטומטי כל 5 שניות
     </script>
 </body>
 </html>

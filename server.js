@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // משרת את תיקיית ה-public
+app.use(express.static("Public")); // משרת את תיקיית ה-public
 
 // חיבור ל-MongoDB
 console.log("🔍 MONGO_URI:", process.env.MONGO_URI);
@@ -49,9 +49,9 @@ app.post("/save-game", async (req, res) => {
     }
 });
 
-// הצגת עמוד HTML במקום JSON
+// הצגת עמוד HTML
 app.get("/games", (req, res) => {
-    res.sendFile(path.join(__dirname, "Public", "index.html"));
+    res.sendFile(path.join(__dirname, "Public", "index.html")); // שינוי מ-Public ל-public
 });
 
 // הפעלת השרת
