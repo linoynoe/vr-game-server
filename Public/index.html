@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Game Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+    <h1>VR Game Results</h1>
+    <button onclick="fetchResults()">🔄 Refresh Now</button>
+    <p>Data updates every 5 seconds...</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Score</th>
+                <th>Time</th>
+                <th>Items Collected</th>
+            </tr>
+        </thead>
+        <tbody id="gameResults"></tbody>
+    </table>
+
+    <script>
+        async function fetchResults() {
+            try {
+                const response = await fetch("http://localhost:5000/games");
+                const data = await response.json();
+                const tableBody = document.getElementById("gameResults");
+                tableBody.innerHTML = ""; // איפוס הטבלה
+
+                data.forEach(game => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${game.playerName}</td>
+                        <td>${game.score}</td>
+                        <td>${game.time}</td>
+                        <td>${game.itemsCollected.join(", ")}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                console.log("✅ Data updated successfully");
+            } catch (error) {
+                console.error("❌ Error fetching data:", error);
+            }
+        }
+
+        // רענון אוטומטי כל 5 שניות
+        setInterval(fetchResults, 5000);
+
+        // קריאה ראשונית בעת טעינת הדף
+        fetchResults();
+    </script>
+</body>
+</html>
