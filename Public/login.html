@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        form { max-width: 300px; margin: auto; }
+        input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; }
+    </style>
+</head>
+<body>
+    <button onclick="logout()">Logout</button>
+
+<script>
+    async function logout() {
+        await fetch("/logout", { method: "POST", credentials: "include" });
+        alert("Logged out successfully!");
+        window.location.href = "/login.html";
+    }
+</script>
+
+    <h1>Login</h1>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert("Login successful!");
+                window.location.href = "/games"; // מפנה לטבלת התוצאות לאחר התחברות
+            } else {
+                alert(data.error);
+            }
+        });
+    </script>
+    <script>
+        async function checkIfLoggedIn() {
+            const response = await fetch("/auth", { credentials: "include" });
+            const data = await response.json();
+            if (data.loggedIn) {
+                window.location.href = "/games"; // אם המשתמש כבר מחובר, להעביר אותו ישר למשחק
+            }
+        }
+        checkIfLoggedIn();
+    </script>
+    
+</body>
+</html>

@@ -12,6 +12,16 @@
     </style>
 </head>
 <body>
+    <button onclick="logout()">Logout</button>
+
+<script>
+    async function logout() {
+        await fetch("/logout", { method: "POST", credentials: "include" });
+        alert("Logged out successfully!");
+        window.location.href = "/login.html";
+    }
+</script>
+
     <h1>VR Game Results</h1>
     <button onclick="fetchGameData()">🔄 Refresh Now</button>
     <p>Data updates every 5 seconds...</p>
@@ -27,6 +37,25 @@
         </thead>
         <tbody id="gameResults"></tbody>
     </table>
+    <script>
+        async function checkAuth() {
+            const response = await fetch("/api/games", { credentials: "include" });
+            if (response.status === 401) {
+                window.location.href = "/login.html"; // אם המשתמש לא מחובר, להפנות אותו להתחברות
+            }
+        }
+        checkAuth();
+    </script>
+    
+    <script>
+        async function checkAuth() {
+            const response = await fetch("/api/games");
+            if (response.status === 401) {
+                window.location.href = "/login.html"; // מפנה לדף התחברות אם המשתמש לא מחובר
+            }
+        }
+        checkAuth();
+    </script>
 
     <script>
         function fetchGameData() {
