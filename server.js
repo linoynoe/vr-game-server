@@ -51,7 +51,7 @@ app.post("/save-game", async (req, res) => {
 
 // הצגת עמוד HTML במקום JSON
 app.get("/games", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "Public", "index.html"));
 });
 
 // הפעלת השרת
