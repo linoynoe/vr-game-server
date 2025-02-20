@@ -3,8 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-const bcrypt = require("bcryptjs"); // הצפנת סיסמאות
-const jwt = require("jsonwebtoken"); // אימות משתמשים
+const bcrypt = require("bcryptjs"); // להצפנת סיסמאות
+const jwt = require("jsonwebtoken"); // לניהול אימות משתמשים
 const cookieParser = require("cookie-parser"); // ניהול קבצי Cookie
 
 const app = express();
@@ -18,7 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("Public"));
+app.use(express.static("Public")); // משרת את תיקיית ה-Public
 
 // 🔗 חיבור ל-MongoDB
 console.log("🔍 MONGO_URI:", process.env.MONGO_URI);
@@ -36,10 +36,10 @@ const User = mongoose.model("User", UserSchema);
 
 const GameSchema = new mongoose.Schema({
     playerName: String,
-    userId: mongoose.Schema.Types.ObjectId, // שמירת קשר למשתמש המחובר
     score: Number,
     time: String,
-    itemsCollected: [String]
+    itemsCollected: [String],
+    userId: mongoose.Schema.Types.ObjectId // קשר למשתמש המחובר
 });
 const Game = mongoose.model("Game", GameSchema);
 
@@ -129,7 +129,15 @@ app.post("/save-game", async (req, res) => {
     }
 });
 
-// 📌 **טעינת עמוד המשחק**
+// 📌 **טעינת עמודי HTML**
+app.get("/register", (req, res) => {
+    res.sendFile(path.join(__dirname, "Public", "register.html"));
+});
+
+app.get("/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "Public", "login.html"));
+});
+
 app.get("/games", (req, res) => {
     res.sendFile(path.join(__dirname, "Public", "index.html"));
 });
