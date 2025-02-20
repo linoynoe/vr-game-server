@@ -18,7 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("public")); // משרת את תיקיית ה-Public
+app.use(express.static("Public")); // משרת את תיקיית ה-Public
 
 // 🔗 חיבור ל-MongoDB
 console.log("🔍 MONGO_URI:", process.env.MONGO_URI);
@@ -131,15 +131,15 @@ app.post("/save-game", async (req, res) => {
 
 // 📌 **טעינת עמודי HTML**
 app.get("/register", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "register.html"));
+    res.sendFile(path.join(__dirname, "Public", "register.html"));
 });
 
 app.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "login.html"));
+    res.sendFile(path.join(__dirname, "Public", "login.html"));
 });
 
 app.get("/games", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "Public", "index.html"));
 });
 
 // 📌 **הפעלת השרת**
