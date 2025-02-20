@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        /* עיצוב טופס התחברות */
         body { font-family: Arial, sans-serif; text-align: center; }
         form { max-width: 300px; margin: auto; }
         input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; }
@@ -37,9 +36,6 @@
             }
         }
 
-        // הפעל את הבדיקה כשדף הטעינה נטען
-        window.onload = checkIfLoggedIn;
-
         // הגדרת טופס התחברות
         document.getElementById("loginForm").addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -55,12 +51,16 @@
             const data = await response.json();
             if (response.ok) {
                 alert("Login successful!");
+                // לבדוק אם ההתחברות הצליחה, ואז להעביר לעמוד המשחק
                 window.location.href = "/games"; // הפנה לעמוד המשחק
             } else {
                 // הצגת הודעת שגיאה במקרה של התחברות לא מוצלחת
                 document.getElementById("message").innerText = data.error;
             }
         });
+
+        // הפעל את הבדיקה רק כאשר העמוד נטען
+        window.onload = checkIfLoggedIn;
     </script>
 </body>
 </html>
