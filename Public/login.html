@@ -8,10 +8,18 @@
         body { font-family: Arial, sans-serif; text-align: center; }
         form { max-width: 300px; margin: auto; }
         input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; }
-        .message { color: red; margin-top: 20px; }
     </style>
 </head>
 <body>
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        async function logout() {
+            await fetch("/logout", { method: "POST", credentials: "include" });
+            alert("Logged out successfully!");
+            window.location.href = "/login.html"; // מעביר לדף ההתחברות לאחר יציאה
+        }
+    </script>
 
     <h1>Login</h1>
     <form id="loginForm">
@@ -20,23 +28,7 @@
         <button type="submit">Login</button>
     </form>
 
-    <p class="message" id="message"></p>  <!-- הצגת הודעות שגיאה -->
-
     <script>
-        // הפונקציה שמבצע את הבדיקה אם המשתמש מחובר
-        async function checkIfLoggedIn() {
-            const response = await fetch("/auth", { credentials: "include" });
-            const data = await response.json();
-            if (data.loggedIn) {
-                // אם המשתמש מחובר, הפנה אותו לעמוד המשחק
-                window.location.href = "/games";
-            } else {
-                // אחרת, הצג הודעת שגיאה או שים לו הודעה
-                document.getElementById("message").innerText = "You are not logged in. Please log in first.";
-            }
-        }
-
-        // הגדרת טופס התחברות
         document.getElementById("loginForm").addEventListener("submit", async function (e) {
             e.preventDefault();
             const email = document.getElementById("email").value;
@@ -51,16 +43,21 @@
             const data = await response.json();
             if (response.ok) {
                 alert("Login successful!");
-                // לבדוק אם ההתחברות הצליחה, ואז להעביר לעמוד המשחק
-                window.location.href = "/games"; // הפנה לעמוד המשחק
+                window.location.href = "/games"; // לאחר התחברות, מעביר לדף המשחק
             } else {
-                // הצגת הודעת שגיאה במקרה של התחברות לא מוצלחת
-                document.getElementById("message").innerText = data.error;
+                alert(data.error);
             }
         });
 
-        // הפעל את הבדיקה רק כאשר העמוד נטען
-        window.onload = checkIfLoggedIn;
+        async function checkIfLoggedIn() {
+            const response = await fetch("/auth", { credentials: "include" });
+            const data = await response.json();
+            if (data.loggedIn) {
+                window.location.href = "/games"; // אם המשתמש מחובר, הפנה אותו ישירות למשחק
+            }
+        }
+
+        checkIfLoggedIn(); // בדיקה אם המשתמש מחובר
     </script>
 </body>
 </html>

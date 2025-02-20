@@ -1,155 +1,80 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Try2</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Try2</div>
-      </div>
-    </div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Game Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+    <h1>VR Game Results</h1>
+    <button onclick="fetchGameData()">🔄 Refresh Now</button>
+    <p>Data updates every 5 seconds...</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Score</th>
+                <th>Time</th>
+                <th>Items Collected</th>
+            </tr>
+        </thead>
+        <tbody id="gameResults"></tbody>
+    </table>
+
     <script>
-
-      // פונקציה שתוודא אם המשתמש מחובר
-      async function checkLoginStatus() {
-        const response = await fetch("/auth", { credentials: "include" });
-        const data = await response.json();
-
-        if (data.loggedIn) {
-          // אם המשתמש מחובר, טוען את המשחק
-          loadGame();
-        } else {
-          // אם לא מחובר, הפנה לדף ההתחברות
-          window.location.href = "/login.html";
+        function fetchGameData() {
+            fetch("https://vr-game-server.onrender.com/api/games")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Data fetched:", data); // בדיקה אם הנתונים מגיעים
+                    updateTable(data);
+                })
+                .catch(error => console.error("Error fetching data:", error));
         }
-      }
 
-      // פונקציה לטעינת המשחק לאחר התחברות
-      function loadGame() {
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/public.loader.js";
-        var config = {
-          dataUrl: buildUrl + "/public.data.gz",
-          frameworkUrl: buildUrl + "/public.framework.js.gz",
-          codeUrl: buildUrl + "/public.wasm.gz",
-          streamingAssetsUrl: "StreamingAssets",
-          companyName: "DefaultCompany",
-          productName: "Try2",
-          productVersion: "0.1",
-          showBanner: unityShowBanner,
-        };
+        function updateTable(games) {
+            const tableBody = document.getElementById("gameResults"); // ✅ ID נכון
+            if (!tableBody) {
+                console.error("❌ Table body not found!");
+                return;
+            }
 
-        loadingBar.style.display = "block";
+            tableBody.innerHTML = ""; // ריקון הטבלה לפני עדכון
 
-        var script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-          createUnityInstance(canvas, config, (progress) => {
-            progressBarFull.style.width = 100 * progress + "%";
-          }).then((unityInstance) => {
-            loadingBar.style.display = "none";
-            fullscreenButton.onclick = () => {
-              unityInstance.SetFullscreen(1);
-            };
-          }).catch((message) => {
-            alert(message);
-          });
-        };
+            if (games.length === 0) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td colspan="4">No game data available</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
 
-        document.body.appendChild(script);
-      }
-
-      // פונקציה שתשלח את תוצאות המשחק לשרת
-      async function saveGameResults(score, itemsCollected) {
-        const response = await fetch("/save-game", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            score: score,
-            itemsCollected: itemsCollected,
-            time: new Date().toISOString()  // דוגמה איך לשלוח זמן
-          })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          alert("Game saved successfully!");
-        } else {
-          alert("Error saving game: " + data.error);
+            games.forEach(game => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${game.playerName}</td>
+                    <td>${game.score}</td>
+                    <td>${game.time}</td>
+                    <td>${game.itemsCollected ? game.itemsCollected.join(", ") : "None"}</td>
+                `;
+                tableBody.appendChild(row);
+            });
         }
-      }
 
-      // פונקציה שתציג את ההודעה בזמן טעינת המשחק
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      // בדוק אם המשתמש מחובר
-      checkLoginStatus();
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/public.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/public.data.gz",
-        frameworkUrl: buildUrl + "/public.framework.js.gz",
-        codeUrl: buildUrl + "/public.wasm.gz",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "Try2",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-      };
-
-      loadingBar.style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
-        });
-      };
-
-      document.body.appendChild(script);
-
+        // טען את הנתונים בהפעלת הדף
+        fetchGameData();
+        setInterval(fetchGameData, 5000); // רענון אוטומטי כל 5 שניות
     </script>
-  </body>
+</body>
 </html>
