@@ -13,13 +13,13 @@
 <body>
     <button onclick="logout()">Logout</button>
 
-<script>
-    async function logout() {
-        await fetch("/logout", { method: "POST", credentials: "include" });
-        alert("Logged out successfully!");
-        window.location.href = "/login.html";
-    }
-</script>
+    <script>
+        async function logout() {
+            await fetch("/logout", { method: "POST", credentials: "include" });
+            alert("Logged out successfully!");
+            window.location.href = "/login.html";
+        }
+    </script>
 
     <h1>Register</h1>
     <form id="registerForm">
@@ -46,7 +46,7 @@
             const data = await response.json();
             if (response.ok) {
                 alert("Registration successful! Redirecting to login...");
-                window.location.href = "/login.html";
+                window.location.href = "/login.html"; // מפנה לדף ההתחברות
             } else {
                 alert(data.error);
             }
