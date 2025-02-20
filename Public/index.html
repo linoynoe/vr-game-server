@@ -45,31 +45,32 @@
         }
 
         function updateTable(games) {
-            const tableBody = document.getElementById("gameResults"); // ✅ ID נכון
-            if (!tableBody) {
-                console.error("❌ Table body not found!");
-                return;
-            }
+    const tableBody = document.getElementById("gameResults"); // ✅ שינוי שם ל- gameResults
+    if (!tableBody) {
+        console.error("❌ Table body not found!"); // בדיקת שגיאה
+        return;
+    }
 
-            tableBody.innerHTML = ""; // ריקון הטבלה לפני עדכון
+    tableBody.innerHTML = ""; // ריקון הטבלה לפני עדכון
 
-            if (games.length === 0) {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td colspan="4">No game data available</td>`;
-                tableBody.appendChild(row);
-                return;
-            }
+    if (games.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="4">No game data available</td>`;
+        tableBody.appendChild(row);
+        return;
+    }
 
-            games.forEach(game => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${game.playerName}</td>
-                    <td>${game.score}</td>
-                    <td>${game.time}</td>
-                    <td>${game.itemsCollected ? game.itemsCollected.join(", ") : "None"}</td>
-                `;
-                tableBody.appendChild(row);
-            });
+    games.forEach(game => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${game.playerName}</td>
+            <td>${game.score}</td>
+            <td>${game.time}</td>
+            <td>${game.itemsCollected ? game.itemsCollected.join(", ") : "None"}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
         }
 
         // טען את הנתונים בהפעלת הדף
